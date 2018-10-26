@@ -23,14 +23,19 @@ var downlinkHandler = (request, reply) => {
     return reply().code(204);
   }
 
+  //Create an array with the size of 4 bytes initilized with 0
+  //var payload = new ArrayBuffer(4)
+  var payload = "1234"
+  var payload_size = Buffer.byteLength(payload,'utf8');
+  console.log(`Downlink payload size is ${payload_size} bytes`)
+
   /*
    * Reply with the proper JSON format.
    * The _downlinkData_ will be sent to the device
    **/
-
   reply({
     [request.payload.deviceId]: {
-      "downlinkData":getDownlinkData(request.payload)
+      "downlinkData":payload//getDownlinkData(request.payload)
     }
   });
 };
