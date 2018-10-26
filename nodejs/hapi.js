@@ -29,8 +29,9 @@ var downlinkHandler = (request, reply) => {
    **/
 
   reply({
-    "deviceId":request.payload.device,
-    "downlinkData":getDownlinkData(request.payload)
+    [request.payload.deviceId]: {
+      "downlinkData":getDownlinkData(request.payload)
+    }
   });
 };
 var downlinkConfig = {
