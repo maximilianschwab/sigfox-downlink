@@ -37,7 +37,7 @@ var downlinkConfig = {
   handler: downlinkHandler,
   validate: {
       payload: {
-        device: Joi.string().hex().required(),
+        deviceId: Joi.string().hex().required(),
         data: Joi.string().hex().max(24)
       }
   }
