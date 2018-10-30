@@ -43,7 +43,15 @@ var downlinkConfig = {
   validate: {
       payload: {
         deviceId: Joi.string().hex().required(),
-        data: Joi.string().hex().max(24)
+        data: Joi.string().hex().max(24),
+        rssi_bs: Joi.string(),
+        duplicate: Joi.string(),
+        snr_bs: Joi.string(),
+        avgSnr_bs: Joi.string(),
+        station: Joi.string(),
+        lat_bs: Joi.string(),
+        lng_bs: Joi.string(),
+        seqNumber: Joi.string()
       }
   }
 };
