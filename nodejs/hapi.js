@@ -2,8 +2,26 @@
 
 const Hapi = require('hapi');
 const Joi = require('joi');
-const server = new Hapi.Server();
-server.connection({ port: process.env.PORT || 4004 });
+const Boom = require('boom');
+
+const launchServer = async function(mongoUrl){
+  // MongoDB connection string
+  const dbOpts = {
+    url: mongoUrl, //'mongodb://localhost:27017/test',
+    settings: {
+        poolSize: 10
+    },
+    decorate: true,
+  };
+
+const server = new Hapi.Server({ port: process.env.PORT || 4004 });
+//server.connection({ port: process.env.PORT || 4004 });
+
+await server.register({
+  plugin: require('hapi-mongodb'),
+  options: dbOpts
+});
+
 var getDownlinkData = function(incoming){
   /*
    *
@@ -66,9 +84,28 @@ server.route({
     config: downlinkConfig
 });
 
-server.start((err) => {
+await server.start((err) => {
   if (err) {
         throw err;
     }
     console.log('info', 'Server running at: ' + server.info.uri);
 });
+}
+
+var program = require('commander');
+
+program
+  .version('0.0.1')
+  .option('-u, --mongo-url <n>', 'Specifies the connection url for MongoDB')
+  .parse(process.argv);
+
+if(program.mongoUrl){
+  console.log("MongoURL: " + program.mongoUrl)
+  launchServer(program.mongoUrl).catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+} else {
+  console.log("Cannot start server because MonogURL is missing!")
+  process.exit(1);
+}

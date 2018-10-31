@@ -4,7 +4,9 @@
   "description": "## About",
   "main": "hapi.js",
   "dependencies": {
-    "hapi": "^16.5.0",
+    "commander": "^2.19.0",
+    "hapi": "^17.6.0",
+    "hapi-mongodb": "^8.0.0",
     "joi": "^10.6.0"
   },
   "devDependencies": {},
