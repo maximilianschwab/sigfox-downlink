@@ -32,7 +32,8 @@ var getDownlinkData = function(incoming){
   //In this example, we're just sending back a 'random' string
   return require('child_process').execSync('head /dev/urandom | LC_CTYPE=C tr -dc a-f0-9 | head -c 16', {encoding:'utf-8'});
 };
-var downlinkHandler = (request, reply) => {
+
+var downlinkHandler = async (request, reply) => {
   if (request.path.match(/empty/)){
     /*
     * Return Empty response
@@ -44,17 +45,36 @@ var downlinkHandler = (request, reply) => {
   //Create an array with the size of 4 bytes initilized with 0
   //var payload = new ArrayBuffer(4)
   var payload ='0123456789abcdef'
-  console.log(`Sending message to device with deviceID: ${request.payload.deviceId}`)
+  console.log(`Sending message to device with deviceID: ${request.payload.deviceId}\n`)
+  console.log(`Payload: ${JSON.stringify(request.payload)}`)
+
+  const db = request.mongo.db;
+
+  try {
+    console.log('Sending data to mongodb')
+    const result = await db.collection('sigfox').insert(request.payload);
+    console.log(`MongodDB result: ${JSON.stringify(result)}`)
+    //return result;
+  }
+  catch (err) {
+    console.log(`Error: ${err}`)
+    throw Boom.internal('Internal MongoDB error', err);
+  }
 
   /*
    * Reply with the proper JSON format.
    * The _downlinkData_ will be sent to the device
    **/
-  reply({
+  return {
     [request.payload.deviceId]: {
       "downlinkData":payload//getDownlinkData(request.payload)
     }
-  });
+  }
+  /*reply({
+    [request.payload.deviceId]: {
+      "downlinkData":payload//getDownlinkData(request.payload)
+    }
+  });*/
 };
 var downlinkConfig = {
   handler: downlinkHandler,
